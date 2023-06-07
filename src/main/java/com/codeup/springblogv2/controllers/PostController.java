@@ -29,9 +29,12 @@ public class PostController {
     }
 
     @GetMapping("/posts/{id}")
-    @ResponseBody
-    public String singlePost(@PathVariable long id) {
-        return "Viewing post with the id of: " + id;
+    public String singlePost(@PathVariable long id, Model model) {
+        String userName = userRepository.findById(1L).get().getName();
+        Post postId = postRepository.findById(id).get();
+        model.addAttribute("username", userName);
+        model.addAttribute("postId", postId);
+        return "/posts/individual-post";
     }
 
 

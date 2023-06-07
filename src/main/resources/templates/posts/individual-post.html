@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+    <meta charset="UTF-8">
+    <title>Create a Post</title>
+
+</head>
+    <body>
+
+    <h1 th:text="'Welcome, ' + ${username}" name="username" id="username"></h1>
+    You are viewing the show page. Here is a list of posts.
+
+
+
+        <!--    LOOPING THROUGH ALL POSTS BY USING POST REPO(EXTENDS JPA REPO) findAll() METHOD IN POST CONTROLLER -->
+            <!--       DISPLAYING EACH INDIVIDUAL POSTS TITLE -->
+    <ul>
+        <li th:each="post: ${postId}" >
+            <a th:text="${postId.title}"></a>
+            <a th:text="${postId.body}"></a>
+        </li>
+    </ul>
+
+
+
+    </body>
+</html>
