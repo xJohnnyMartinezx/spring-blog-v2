@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <meta charset="UTF-8">
+    <title>Create a Post</title>
+
+</head>
+    <body>
+    <h1 th:text="'Welcome, ' + ${name}" name="user" id="user"></h1>
+    You are viewing the show page. Here is a list of posts.
+
+
+    <ul>
+        <!--    LOOPING THROUGH ALL POSTS BY USING POST REPO(EXTENDS JPA REPO) findAll() METHOD IN POST CONTROLLER -->
+        <li th:each="post : ${postList}">
+            <!--       DISPLAYING EACH INDIVIDUAL POSTS TITLE -->
+            <a th:href="@{/posts/{id} (id = ${post.id})}"  th:text="${post.title}"></a>
+        </li>
+    </ul>
+
+</body>
+</html>
