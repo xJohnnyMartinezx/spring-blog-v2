@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+      <meta charset="UTF-8">
+      <title>Weather Map</title>
+<!--      MAPBOX -->
+      <script src='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js'></script>
+      <link href='https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css' rel='stylesheet' />
+
+<!--    BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+          crossorigin="anonymous">
+
+<!--      KEYS-->
+      <script src="js/keys.js"></script>
+
+<!--    JQUERY CDN-->
+      <script
+              src="https://code.jquery.com/jquery-3.6.4.min.js"
+              integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+              crossorigin="anonymous"></script>
+<!--     LINKED FILES-->
+<!--      <script src="js/weather_map.js"></script>-->
+<!--      <link rel="stylesheet" href="css/weather_map.css">-->
+
+  </head>
+<!--  <body>-->
+  <body style="background-color: #444444">
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+  <section class="row container-fluid mx-0 px-0">
+
+      <header id="city" class=" text-center mx-auto" style="background-color:rgba(45, 89, 119, 60)">
+          <h2 style="color: #0FB784FF">Weather App</h2>
+
+      </header>
+
+      <br>
+
+
+
+  <div id="cityName"></div>
+
+<!--  vvv OLD SEARCH INPUT vvv-->
+<!--  <label for="search">Search A City</label>-->
+<!--  <input type="text" id="search">-->
+<!--  <button id="sub-button" type="button">submit</button>-->
+<!--  ^^^--------------------------^^^ -->
+      <br>
+
+      <form th:method="post" th:action="@{/weather-submit}" th:object="${weatherData}">
+
+          <label for="weatherCitySelect">Choose a City:</label>
+
+          <select name="weatherCitySelect" id="weatherCitySelect">
+<!--              <option name="weatherCity" id="weatherCity">-->
+<!--                  <input type="hidden" id="cityInput" th:field="*{location}">-->
+<!--              </option>-->
+              <option name="location" id="location" th:text="${location}" >
+<!--                  <input type="hidden" th:text="${location}" id="location" name="location">-->
+              </option>
+
+          </select>
+
+          <label for="feelsLikeSelect">Choose a Feels Like:</label>
+
+          <select name="feelsLikeSelect" id="feelsLikeSelect">
+<!--              <option name="feelsLike" id="feelsLike">-->
+<!--                  <input type="hidden" id="feelsInput" th:field="*{feelsLike}">-->
+<!--              </option>-->
+              <option name="feelsLike" id="feelsLike" th:text="${feelsLike}" >
+<!--                  <input type="hidden" th:text="${feelsLike}" id="feelsLike" name="feelsLike">-->
+              </option>
+
+          </select>
+
+          <label for="windSpeedSelect">Choose a Wind Speed:</label>
+
+          <select name="windSpeedSelect" id="windSpeedSelect">
+<!--              <option name="windSpeed" id="windSpeed">-->
+<!--                  <input type="hidden" id="windInput" th:field="*{windSpeed}">-->
+<!--              </option>-->
+              <option name="windSpeed" id="windSpeed" th:text="${windSpeed}">
+<!--                  <input type="hidden" th:text="${windSpeed}" id="windSpeed" name="windSpeed">-->
+              </option>
+
+          </select>
+          <button type="submit">Submit</button>
+      </form>
+<!--  WEATHER INFO CARDS -->
+<!--<div id="weather-card" class="d-flex">-->
+<!--</div>-->
+
+      <p>Here's the list of subjects. Select any one:</p>
+
+      <div id="weatherInfoSelect"></div>
+
+      <br>
+<!-- MAP -->
+<!--<div id="map" style='width: 1000px; height: 600px;'></div>-->
+  <div id="map-container" class="d-none d-md-block justify-content-center mt-3 mx-auto" style="width: 100%">
+      <div id='map' style='width: 100%; height: 500px;'></div>
+  </div>
+  </section>
+  <script th:inline="javascript">
+      function weatherCardData(lng, lat) {
+          // CREATES AN EMPTY HTML STRING
+          let htmlCity = "";
+          let htmlFeels = "";
+          let htmlWind = "";
+          // OPEN WEATHER GET REQUEST WITH lat AND lng REFERENCING weatherCardData FUNCTION PARAMETERS
+          $.get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lng + "&appid=" + WEATHER_MAP_KEY, {
+              units: "imperial"
+              // RETRIEVES DATA(weatherData) FROM GET REQUEST
+          }).done(function (weatherData) {
+
+
+              $('#cityName').html("<h1 style='color: #0fb784'>" + "Today's weather in " + weatherData.city.name + "</h1>");
+              //
+              // const submitForm = document.getElementById("data-form");
+              //
+              // // CREATING SUBMIT FORM INSIDE HTML WEATHER-CARD ELEMENT.
+              //
+              // const citySelectTag = document.createElement("select")
+              // submitForm.appendChild(citySelectTag);
+              //
+              //
+              // const feelsSelectTag = document.createElement("select")
+              // submitForm.appendChild(feelsSelectTag);
+              //
+              // const windSpeedSelectTag = document.createElement("select")
+              // submitForm.appendChild(windSpeedSelectTag);
+
+
+              //
+              //     for (let i = 0; i <= 39; i += 8) {
+
+              // const cityOption = document.createElement("option");
+              // console.log(weatherData);
+              // cityOption.value = weatherData.city.name;
+              // cityOption.text = weatherData.city.name;
+              // citySelectTag.appendChild(cityOption);
+
+              //         const cityData = document.getElementById("weatherCity")
+              //         cityData.value = weatherData.city.name;
+              //         cityData.text = weatherData.city.name;
+              //
+              //     }
+              //
+              // weatherData.list.forEach(option => {
+              //     // const feelsOption = document.createElement("option");
+              //     // console.log(option);
+              //     // feelsOption.value = option.main.feels_like;
+              //     // feelsOption.text = option.main.feels_like;
+              //     // feelsSelectTag.appendChild(feelsOption);
+              //
+              //     const feelsLikeOption = document.getElementById("feelsLike")
+              //     feelsLikeOption.value = option.main.feels_like;
+              //     feelsLikeOption.text = option.main.feels_like;
+              // })
+              //
+              // weatherData.list.forEach(option => {
+              //     // const windSpeedOption = document.createElement("option");
+              //     // console.log(option);
+              //     // windSpeedOption.value = option.wind.speed;
+              //     // windSpeedOption.text = option.wind.speed;
+              //     // windSpeedSelectTag.appendChild(windSpeedOption);
+              //
+              //     const windSpeedOption = document.getElementById("windSpeed")
+              //     windSpeedOption.value = option.wind.speed;
+              //     windSpeedOption.text = option.wind.speed;
+              // })
+
+
+
+              for (let i = 0; i <= 39; i += 8) {
+                  console.log("line 70: " + weatherData.city.name);
+                  // let cityName = weatherData.city.name;
+                  //
+                  // $('weatherCity').setAttribute("value", weatherData.city.name)
+                  // $('weatherCity').setAttribute("text", weatherData.city.name)
+                  // $('weatherCity').setAttribute("th:field", "*{location}")
+
+
+                  // let cityName = weatherData.city.name;
+
+
+                  var x = document.getElementById('location');
+                  // var option = document.createElement("option");
+                  // option.setAttribute("id","locationCity");
+                  // option.setAttribute("name","locationCity");
+                  // option.setAttribute("th:text",cityInfo);
+                  x.text = weatherData.city.name;
+                  x.value = weatherData.city.name;
+                  // x.appendChild( option );
+
+
+//
+//                   htmlCity += `
+// //
+// //
+// // <!--            html += "<label for='weatherCitySelect'> Choose a City:</label>"-->
+// //
+// // <!--            html += "<select name='weatherCitySelect' id='weatherCitySelect'>"-->
+//              <option name='weatherCity' id='weatherCity' value='${weatherData.city.name}' text='${weatherData.city.name}'>${weatherData.city.name}</option>
+// // <!--            html += "</select>"-->
+// //
+//                 `
+
+
+                  // $('#weatherCitySelect').html(htmlCity);
+
+
+                  weatherData.list.forEach(option => {
+
+
+                      // // let feelsLikeData = option.main.feels_like;
+                      // htmlFeels += `
+                      //
+                      //      <option name="feelsLike" id="feelsLike" value=${option.main.feels_like}' text='${option.main.feels_like}'>${option.main.feels_like}</option>
+                      //     `
+
+
+                      var x = document.getElementById('feelsLike');
+                      // var feelsOption = document.createElement("option");
+                      // feelsOption.setAttribute("name","feels");
+                      // feelsOption.setAttribute("id","feels");
+                      // feelsOption.setAttribute("th:text",feelsInfo);
+                      x.text = option.main.feels_like;
+                      x.value = option.main.feels_like;
+
+                      // x.appendChild( feelsOption );
+
+
+                  })
+
+                  // $('#feelsLikeSelect').html(htmlFeels);
+
+                  weatherData.list.forEach(option => {
+
+
+                      // let windData = option.wind.speed;
+                      //
+                      // htmlWind += `
+                      //
+                      //
+                      //     <option name="windSpeed" id="windSpeed" value='${option.wind.speed}' text='${option.wind.speed}'>${option.wind.speed}</option>
+                      //       `
+
+
+                      var x = document.getElementById('windSpeed');
+                      // var windOption = document.createElement("option");
+                      // windOption.setAttribute("id","wind");
+                      // windOption.setAttribute("name","wind");
+                      // windOption.setAttribute("th:text",windInfo);
+                      x.text = option.wind.speed
+                      x.value = option.wind.speed;
+
+                      // x.appendChild( windOption );
+
+
+                  })
+              }
+
+              // $('#windSpeedSelect').html(htmlWind);
+
+
+
+
+
+          })
+
+
+
+
+          // html += "<label for='feelsLikeSelect'>Choose a Feels Like:</label>"
+          //
+          // html += "<select name='feelsLikeSelect' id='feelsLikeSelect'>"
+          // html += "<option name='feelsLike' id='feelsLike' th:field='*{feelsLike}' value='${weatherData.list[i].main.feels_like}' text='${weatherData.list[i].main.feels_like}'>${weatherData.list[i].main.feels_like}</option>"
+          // html += "</select>"
+          //
+          //
+          //
+          //
+          // html += "<label for='windSpeedSelect'>Choose a Wind Speed:</label>"
+          //
+          // html += "<select name='windSpeedSelect' id='windSpeedSelect'>"
+          // html += "<option name='windSpeed' id='windSpeed' th:field='*{windSpeed}' value='${weatherData.list[i].wind.speed}' text='${weatherData.list[i].wind.speed}'>${weatherData.list[i].wind.speed}</option>"
+          // html += "</select>"
+      }
+  </script>
+<script>
+
+
+
+    //     MAPBOX
+// ***** INITIALIZING MAP WITH SET COORDINATES FOR DALLAS, TX *******
+    mapboxgl.accessToken = MAPBOX;
+    const map = new mapboxgl.Map({
+        container: 'map',
+    // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [-96.79750770099064, 32.78110517375738],
+        zoom: 10
+    });
+
+// ***** INITIALIZING WEATHER CARDS WITH SET COORDINATES FOR DALLAS, TX *******
+    weatherCardData(-96.79750770099064, 32.78110517375738);
+
+// ***** CREATES A MARKER OBJECT THAT WILL BE USED FOR USER SEARCH AND DRAG FUNCTIONALITY ********
+    const marker = new mapboxgl.Marker({
+        draggable: true,
+      color: "purple"
+    })
+
+// ***** CREATES GEOCODER SEARCH BOX ON THE MAP ********
+    let geo = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: false
+
+    })
+// ***** ADDS THE MAPBOX GEOCODER NATIVE SEARCH BOX TO MAP
+    map.addControl(geo)
+
+
+// ***** RETRIEVING THE COORDINATES OF USER'S SEARCH RESULTS *********
+    geo.on("result", function (e) {
+      let searchCoordLng = e.result.geometry.coordinates[0];
+      let searchCoordLat = e.result.geometry.coordinates[1];
+      // console.log(e)
+      // PASSING RETRIEVED COORDINATES TO weatherCardData FUNCTION AS ITS TWO PARAMETERS.
+      weatherCardData(searchCoordLng, searchCoordLat);
+      // CREATING A NEW MARKER AND PASSING THE SAME RETRIEVED COORDINATES TO IT.
+      marker.setLngLat([searchCoordLng, searchCoordLat]).addTo(map);
+    });
+
+// ***** (CLICK EVENT LISTENER)...ADDS A MARKER TO THE MAP WHEREVER THE USER CLICKS BY CALLING THE add_marker FUNCTION********
+    map.on('click', addMarker);
+    // RETRIEVES THE COORDINATES FROM THE MARKER
+    function addMarker (event) {
+        let coordinates = event.lngLat;
+        // console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
+        // THIS ACTUALLY POPULATES THE MARKER ON THE MAP
+        marker.setLngLat(coordinates).addTo(map);
+        // CENTERS THE MAP MARKER ON CLICK LOCATION
+        map.setCenter(coordinates);
+        // PASSES MARKER COORDINATES TO weatherCardData FUNCTION
+        // SO THAT WEATHER CARD DATA CAN BE UPDATED TO MARKER'S CURRENT LOCATION
+        weatherCardData(coordinates.lng, coordinates.lat)
+    }
+    // REMOVES CURRENT MARKER WHEN USER CLICKS ON A NEW LOCATION.
+    marker.remove();
+
+    // **** (DRAGEND EVENT LISTENER)...CALLS onDragEnd FUNCTION WHEN THE USER STOPS DRAGGING THE MARKER *******
+    marker.on('dragend', onDragEnd);
+    // RETRIEVES THE MARKER COORDINATES ON USER DRAG END
+    function onDragEnd() {
+        const lngLat = marker.getLngLat();
+        // console.log(lngLat);
+        // CENTERS THE MAP MARKER ON DRAG END LOCATION
+        map.setCenter([lngLat.lng, lngLat.lat]);
+        // PASSES MARKER COORDINATES TO weatherCardData FUNCTION
+        // SO THAT WEATHER CARD DATA CAN BE UPDATED TO MARKER'S CURRENT LOCATION
+        weatherCardData(lngLat.lng, lngLat.lat);
+    }
+
+
+//     *******  vvv--OLD SEARCH INPUT TARGETING SUBMIT BUTTON (now using mapbox native search box)--vvv  ********
+//
+//     // TARGETING THE SUBMIT BUTTON IN MY HTML
+//     document.getElementById("sub-button").addEventListener("click", function (){
+// // SETTING THE FIRST PARAMETER OF geocode() AS THE VALUE TYPED INTO THE SEARCH BOX, SECOND PARAM IS API KEY
+//         let currentLocation = geocode(document.getElementById("search").value, MAPBOX);
+//         console.log(currentLocation);
+//         // .then IS GETTING THE RESULTS FROM PROMISE AND FILTER THEM INTO "center" AS LAT AND LNG AT INDEX 0, AND 1.
+//         currentLocation.then(function (results){
+//             console.log(results);
+//             map.setCenter([results[0], results[1]]);
+//             marker.setLngLat([results[0], results[1]]).addTo(map);
+//             weatherCardData(results[0], results[1]);
+//         });
+//     });
+//     ******* ^^^------------------------------------------^^^ ******
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+<!-- LINKED JS FILES-->
+<!--  BOOTSTRAP -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+        integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+        integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
+        crossorigin="anonymous"></script>
+
+  </body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <title>Home</title>
@@ -7,6 +7,28 @@
 <body>
 
 <h1>This is the home page</h1>
+
+
+<div sec:authorize="isAuthenticated()">
+    This content is only shown to authenticated users.
+
+    <!--        <h1 th:text="'Welcome, ' + ${username}" name="user" id="user"></h1>-->
+
+    Username: <span th:text="'Welcome, ' + ${#authentication.principal.username}"/>
+    Email: <span th:text="${#authentication.principal.email}"/>
+</div>
+
+<ul>
+
+<li th:each="weather : ${weatherList}">
+    <span th:text="'Location: ' + ${weather.location}"></span>
+    <span th:text="'Feels like: ' + ${weather.location}"></span>
+    <span th:text="'Wind Speed: ' + ${weather.location}"></span>
+
+
+</li>
+
+</ul>
 
 </body>
 </html>

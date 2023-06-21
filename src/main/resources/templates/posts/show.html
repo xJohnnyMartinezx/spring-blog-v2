@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
     <meta charset="UTF-8">
-    <title>Create a Post</title>
+    <title></title>
 
 </head>
     <body>
-    <h1 th:text="'Welcome, ' + ${name}" name="user" id="user"></h1>
+    <div sec:authorize="isAuthenticated()">
+        This content is only shown to authenticated users.
+
+<!--        <h1 th:text="'Welcome, ' + ${username}" name="user" id="user"></h1>-->
+
+        User ID: <span th:text="${#authentication.principal.id}"/>
+        Username: <span th:text="${#authentication.principal.username}"/>
+        Email: <span th:text="${#authentication.principal.email}"/>
+    </div>
+
     You are viewing the show page. Here is a list of posts.
 
 
@@ -18,5 +27,17 @@
         </li>
     </ul>
 
-</body>
+    <nav>
+        <ul>
+            <!-- More links here... -->
+            <li>
+                <form th:action="@{/logout}" th:method="post">
+                    <button class="btn-link btn" style="margin-top: 8px">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+
+    </body>
 </html>

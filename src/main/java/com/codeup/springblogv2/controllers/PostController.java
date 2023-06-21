@@ -4,6 +4,7 @@ import com.codeup.springblogv2.models.Post;
 import com.codeup.springblogv2.models.User;
 import com.codeup.springblogv2.repos.PostRepository;
 import com.codeup.springblogv2.repos.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,16 +24,33 @@ public class PostController {
     public String viewPosts(Model model) {
         model.addAttribute("postList", postRepository.findAll());
 //        GETTING THE USERNAME BY USING THE USER REPO
-        String user = userRepository.findById(1L).get().getName();
-        model.addAttribute("name", user);
+        User logginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        System.out.println(logginUser.getUsername());
+        System.out.println(logginUser.getId());
+        System.out.println(logginUser.getEmail());
+//        String user = userRepository.findById(1L).get().getUsername();
+        model.addAttribute("username", logginUser.getUsername());
+        return "posts/show";
+    }
+
+    @GetMapping("/posts-search")
+    public String viewPostsSearch(Model model) {
+        model.addAttribute("postListSearch", postRepository.findAll());
+//        GETTING THE USERNAME BY USING THE USER REPO
+        User logginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        model.addAttribute("username", logginUser.getUsername());
         return "posts/show";
     }
 
     @GetMapping("/posts/{id}")
     public String singlePost(@PathVariable long id, Model model) {
-        String userName = userRepository.findById(1L).get().getName();
+//        String userName = userRepository.findById(1L).get().getUsername();
         Post postId = postRepository.findById(id).get();
-        model.addAttribute("username", userName);
+        User logginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        model.addAttribute("username", logginUser.getUsername());
         model.addAttribute("postId", postId);
         return "/posts/individual-post";
     }
@@ -48,13 +66,16 @@ public class PostController {
 
     @PostMapping("/posts/create")
     public String createNewPost(@RequestParam String title, @RequestParam String body) {
-        User user = userRepository.getById(1L);
+//        User user = userRepository.getById(1L);
+        User logginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Post newPost = new Post(title, body);
-        newPost.setUser(user);
+        newPost.setUser(logginUser);
 
 //        SAVING THE CREATED POST TO POSTS REPO
         postRepository.save(newPost);
 //        REDIRECTING TO VIEW ALL POSTS PAGE
         return "redirect:/posts";
     }
+
+
 }

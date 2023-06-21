@@ -35,3 +35,8 @@ build/
 
 #App Props
 src/main/resources/application.properties
+
+
+secret.txt
+
+src/main/resources/static/js/keys.js
